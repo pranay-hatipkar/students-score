@@ -1,7 +1,4 @@
-// script.js — no arrow functions used anywhere
-
-// A small "mock API" dataset (this could be replaced with a real fetch to server)
-var STUDENTS_DB = {
+var studen_data = {
   1: { id:1, name: "Student 1", marks: { Math:82, English:74, Science:91, History:68, Geography:77 } },
   2: { id:2, name: "Student 2", marks: { Math:56, English:66, Science:59, History:72, Geography:61 } },
   3: { id:3, name: "Student 3", marks: { Math:92, English:88, Science:95, History:90, Geography:93 } },
@@ -14,12 +11,10 @@ var STUDENTS_DB = {
   10:{ id:10,name: "Student 10",marks: { Math:71, English:69, Science:73, History:68, Geography:70 } }
 };
 
-// Simulated API call: returns a Promise resolved with student data after a delay
 function fetchStudentById(studentId) {
   return new Promise(function(resolve, reject) {
-    // simulate network latency
     setTimeout(function() {
-      var data = STUDENTS_DB[studentId];
+      var data = studen_data[studentId];
       if (data) {
         resolve({
           status:200,
@@ -31,20 +26,17 @@ function fetchStudentById(studentId) {
           error: "Student not found"
         });
       }
-    }, 450); // 450ms simulated latency
+    }, 450);
   });
 }
 
-// UI helpers
 var matrixBox = document.getElementById("matrixBox");
 var modal = document.getElementById("modal");
 var modalContent = document.getElementById("modalContent");
 var closeBtn = document.getElementById("closeBtn");
 
-// Create 10 student CTAs inside the square box
 function createStudentButtons() {
-  // We'll create 10 buttons and then fill remaining grid cells with spacers so box stays square
-  var totalCells = 25; // using 5x5 grid in CSS for square look
+  var totalCells = 10;
   var studentCount = 10;
   var i;
 
@@ -63,32 +55,28 @@ function createStudentButtons() {
     matrixBox.appendChild(btn);
   }
 
-  // Fill rest with spacer elements to preserve layout
-  var currentCount = matrixBox.children.length;
-  for (i = currentCount; i < totalCells; i++) {
-    var sp = document.createElement("div");
-    sp.className = "spacer";
-    matrixBox.appendChild(sp);
-  }
+  // var currentCount = matrixBox.children.length;
+  // for (i = currentCount; i < totalCells; i++) {
+  //   var sp = document.createElement("div");
+  //   sp.className = "spacer";
+  //   matrixBox.appendChild(sp);
+  // }
 }
 
-// Render marks into modal
 function renderStudentModal(student) {
   var title = student.name;
-  var initial = student.name.split(" ").pop(); // last word as avatar text
-
-  // clear content
+  var initial = student.name.split(" ").pop();
   modalContent.innerHTML = "";
 
   // header meta
-  var meta = document.createElement("div");
-  meta.className = "student-meta";
+  // var meta = document.createElement("div");
+  // meta.className = "student-meta";
 
   var avatar = document.createElement("div");
   avatar.className = "avatar";
   avatar.textContent = initial;
 
-  var metaText = document.createElement("div");
+  // var metaText = document.createElement("div");
   var nameEl = document.createElement("div");
   nameEl.style.fontWeight = "700";
   nameEl.textContent = student.name;
@@ -98,15 +86,14 @@ function renderStudentModal(student) {
   idEl.style.fontSize = "13px";
   idEl.textContent = "ID: " + student.id;
 
-  metaText.appendChild(nameEl);
-  metaText.appendChild(idEl);
+  // metaText.appendChild(nameEl);
+  // metaText.appendChild(idEl);
 
-  meta.appendChild(avatar);
-  meta.appendChild(metaText);
+  // meta.appendChild(avatar);
+  // meta.appendChild(metaText);
 
-  modalContent.appendChild(meta);
+  // modalContent.appendChild(meta);
 
-  // marks list
   var list = document.createElement("ul");
   list.className = "marks-list";
 
@@ -129,7 +116,6 @@ function renderStudentModal(student) {
 
   modalContent.appendChild(list);
 
-  // average and verdict
   var sum = 0;
   for (i = 0; i < subjectNames.length; i++) {
     sum += student.marks[subjectNames[i]];
@@ -143,16 +129,13 @@ function renderStudentModal(student) {
 
   modalContent.appendChild(avgEl);
 
-  // show modal
   modal.classList.remove("hidden");
   closeBtn.focus();
 }
 
-// Click handler for student buttons (event delegation)
 function onMatrixClick(event) {
   var target = event.target;
 
-  // find the button element in case inner span was clicked
   while (target && target !== matrixBox && !target.hasAttribute("data-student-id")) {
     target = target.parentElement;
   }
@@ -166,11 +149,9 @@ function onMatrixClick(event) {
   }
   var studentId = parseInt(idAttr, 10);
 
-  // show loading state in modal quickly
   modalContent.innerHTML = "<div style='font-weight:700;margin:12px 0'>Loading student data...</div>";
   modal.classList.remove("hidden");
 
-  // call the simulated API
   fetchStudentById(studentId).then(function(response) {
     if (response && response.status === 200) {
       renderStudentModal(response.data);
@@ -182,14 +163,11 @@ function onMatrixClick(event) {
   });
 }
 
-// Close modal
 function closeModal() {
   modal.classList.add("hidden");
-  // return focus to the matrix for keyboard users
   matrixBox.querySelector(".student-btn") && matrixBox.querySelector(".student-btn").focus();
 }
 
-// Hook up behaviors
 function init() {
   createStudentButtons();
   matrixBox.addEventListener("click", onMatrixClick, false);
@@ -198,7 +176,6 @@ function init() {
     closeModal();
   }, false);
 
-  // close on overlay click (but not when clicking inside panel)
   modal.addEventListener("click", function(evt) {
     var panel = modal.querySelector(".modal-panel");
     if (!panel.contains(evt.target)) {
@@ -206,7 +183,6 @@ function init() {
     }
   }, false);
 
-  // close on Escape key
   document.addEventListener("keydown", function(ev) {
     if (ev.key === "Escape") {
       if (!modal.classList.contains("hidden")) {
